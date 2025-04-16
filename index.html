@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أداة إزالة الخلفية من الصور - مُحسّنة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --primary-hover: #2980b9;
+            --success-color: #2ecc71;
+            --success-hover: #27ae60;
+            --danger-color: #e74c3c;
+            --danger-hover: #c0392b;
+            --warning-color: #f39c12;
+            --warning-hover: #d35400;
+            --dark-color: #2c3e50;
+            --light-color: #f5f7fa;
+            --gray-color: #7f8c8d;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.8;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            color: var(--dark-color);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            color: var(--gray-color);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .app-container {
+            background-color: #fff;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 40px;
+            margin-bottom: 40px;
+            transition: var(--transition);
+        }
+        
+        .upload-section {
+            border: 3px dashed var(--primary-color);
+            border-radius: var(--border-radius);
+            padding: 60px 20px;
+            text-align: center;
+            transition: var(--transition);
+            margin-bottom: 30px;
+            position: relative;
+            background-color: rgba(52, 152, 219, 0.03);
+        }
+        
+        .upload-section.hover {
+            border-color: var(--success-color);
+            background-color: rgba(46, 204, 113, 0.08);
+            transform: translateY(-3px);
+        }
+        
+        .upload-section i {
+            font-size: 60px;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+        
+        .upload-section.hover i {
+            color: var(--success-color);
+            transform: scale(1.05);
+        }
+        
+        .upload-section h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+        
+        .upload-section p {
+            margin: 15px 0;
+            color: var(--gray-color);
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn i {
+            font-size: 1.1em;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(41, 128, 185, 0.3);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: var(--success-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(192, 57, 43, 0.3);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: var(--warning-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(211, 84, 0, 0.3);
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: var(--dark-color);
+            font-size: 1.1rem;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-group input {
+            margin-left: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checkbox-group label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+        
+        .settings-panel {
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+            animation: slideDown 0.5s ease;
+        }
+        
+        .settings-panel h4 {
+            margin-bottom: 25px;
+            color: var(--dark-color);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .settings-panel h4 i {
+            margin-left: 12px;
+        }
+        
+        .api-key-container {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .api-key-container .btn {
+            white-space: nowrap;
+        }
+        
+        .text-muted {
+            color: var(--gray-color) !important;
+            font-size: 0.95rem;
+            display: block;
+            margin-top: 8px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 25px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideDown {
+            from { 
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .progress-container {
+            width: 100%;
+            margin-top: 30px;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .preview-section {
+            display: none;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 40px;
+            animation: fadeIn 0.8s ease;
+        }
+        
+        .image-container {
+            flex: 1;
+            min-width: 300px;
+            text-align: center;
+        }
+        
+        .image-container h4 {
+            margin-bottom: 20px;
+            color: var(--dark-color);
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .image-preview {
+            max-width: 100%;
+            max-height: 450px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+        
+        .image-preview:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .result-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .message {
+            margin-top: 20px;
+            font-weight: 600;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .error-message {
+            background-color: rgba(231, 76, 60, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(231, 76, 60, 0.2);
+        }
+        
+        .success-message {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--gray-color);
+            font-size: 1rem;
+            animation: fadeIn 1s ease;
+        }
+        
+        /* تحسينات للهواتف */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            header p {
+                font-size: 1rem;
+            }
+            
+            .app-container {
+                padding: 25px;
+            }
+            
+            .upload-section {
+                padding: 40px 15px;
+            }
+            
+            .upload-section i {
+                font-size: 48px;
+            }
+            
+            .preview-section {
+                flex-direction: column;
+                gap: 25px;
+            }
+            
+            .api-key-container {
+                flex-direction: column;
+            }
+            
+            .btn {
+                padding: 10px 18px;
+                font-size: 0.95rem;
+            }
+            
+            .settings-panel {
+                padding: 20px;
+            }
+        }
+        
+        /* تأثيرات خاصة */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-magic"></i> أداة إزالة الخلفية من الصور</h1>
+            <p>أداة سهلة الاستخدام تتيح لك إزالة خلفية الصور بضغطة زر مع خيارات متقدمة للتحكم في النتيجة</p>
+        </header>
+
+        <div class="app-container">
+            <div class="upload-section" id="dropArea">
+                <i class="fas fa-cloud-upload-alt pulse"></i>
+                <h3>اسحب وأسقط الصورة هنا</h3>
+                <p>أو</p>
+                <input type="file" id="fileInput" accept="image/*" class="hidden">
+                <button class="btn btn-primary" id="uploadBtn">
+                    <i class="fas fa-image"></i> اختر صورة
+                </button>
+                <div class="message error-message hidden" id="errorMessage"></div>
+                <div class="message success-message hidden" id="successMessage"></div>
+            </div>
+
+            <div class="toggle-settings">
+                <button class="btn btn-warning" id="toggleSettingsBtn">
+                    <i class="fas fa-cog"></i> إظهار/إخفاء الإعدادات المتقدمة
+                </button>
+            </div>
+
+            <div class="settings-panel hidden" id="settingsPanel">
+                <h4><i class="fas fa-sliders-h"></i> الإعدادات المتقدمة</h4>
+                <div class="form-group">
+                    <label for="apiKeyInput"><i class="fas fa-key"></i> مفتاح API (اختياري)</label>
+                    <div class="api-key-container">
+                        <input type="password" id="apiKeyInput" class="form-control" placeholder="أدخل مفتاح Remove.bg API إذا كان لديك">
+                        <button class="btn btn-primary" id="saveApiKeyBtn">
+                            <i class="fas fa-save"></i> حفظ
+                        </button>
+                    </div>
+                    <small class="text-muted">بدون مفتاح API، ستستخدم الأداة محاكاة للنتيجة</small>
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-cogs"></i> خيارات المعالجة</label>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="highQualityCheckbox" checked>
+                        <label for="highQualityCheckbox">جودة عالية</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="shadowCheckbox">
+                        <label for="shadowCheckbox">الحفاظ على الظلال</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sensitivityRange"><i class="fas fa-tachometer-alt"></i> حساسية الإزالة (0-100)</label>
+                    <input type="range" id="sensitivityRange" min="0" max="100" value="30" class="form-control">
+                    <small class="text-muted">كلما زادت القيمة، زادت دقة إزالة الخلفية</small>
+                </div>
+                <div class="form-group">
+                    <label for="bgColorSelect"><i class="fas fa-palette"></i> لون الخلفية الجديدة</label>
+                    <select id="bgColorSelect" class="form-control">
+                        <option value="transparent">شفاف</option>
+                        <option value="white">أبيض</option>
+                        <option value="black">أسود</option>
+                        <option value="green">أخضر</option>
+                        <option value="blue">أزرق</option>
+                        <option value="custom">مخصص</option>
+                    </select>
+                </div>
+                <div class="form-group hidden" id="customColorGroup">
+                    <label for="customColorInput"><i class="fas fa-eye-dropper"></i> اختر لون مخصص</label>
+                    <input type="color" id="customColorInput" class="form-control" value="#ffffff">
+                </div>
+            </div>
+
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <p>جاري معالجة الصورة...</p>
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <span>تقدم المعالجة</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" id="progressBar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-section" id="previewSection">
+                <div class="image-container">
+                    <h4><i class="fas fa-image"></i> الصورة الأصلية</h4>
+                    <img id="originalImage" class="image-preview hidden" src="#" alt="الصورة الأصلية">
+                    <div class="result-actions">
+                        <button class="btn btn-danger" id="cancelBtn">
+                            <i class="fas fa-times"></i> إلغاء
+                        </button>
+                    </div>
+                </div>
+                <div class="image-container">
+                    <h4><i class="fas fa-check-circle"></i> النتيجة بعد الإزالة</h4>
+                    <img id="resultImage" class="image-preview hidden" src="#" alt="النتيجة بعد إزالة الخلفية">
+                    <div class="result-actions">
+                        <button class="btn btn-success" id="downloadBtn">
+                            <i class="fas fa-download"></i> تحميل النتيجة
+                        </button>
+                        <button class="btn btn-primary" id="tryAnotherBtn">
+                            <i class="fas fa-redo"></i> تجربة صورة أخرى
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>جميع الحقوق محفوظة &copy; <span id="year"></span> - أداة إزالة الخلفية من الصور مصنوع من قبل شركة mk.vwn</p>
+        </footer>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // عرض السنة الحالية في التذييل
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // العناصر الرئيسية
+        const fileInput = document.getElementById('fileInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const dropArea = document.getElementById('dropArea');
+        const originalImage = document.getElementById('originalImage');
+        const resultImage = document.getElementById('resultImage');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const tryAnotherBtn = document.getElementById('tryAnotherBtn');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const progressBar = document.getElementById('progressBar');
+        const progressPercent = document.getElementById('progressPercent');
+        const previewSection = document.getElementById('previewSection');
+
+        // عناصر الإعدادات
+        const toggleSettingsBtn = document.getElementById('toggleSettingsBtn');
+        const settingsPanel = document.getElementById('settingsPanel');
+        const bgColorSelect = document.getElementById('bgColorSelect');
+        const customColorGroup = document.getElementById('customColorGroup');
+        const customColorInput = document.getElementById('customColorInput');
+        const saveApiKeyBtn = document.getElementById('saveApiKeyBtn');
+        const highQualityCheckbox = document.getElementById('highQualityCheckbox');
+        const shadowCheckbox = document.getElementById('shadowCheckbox');
+        const sensitivityRange = document.getElementById('sensitivityRange');
+
+        // تحميل الإعدادات المحفوظة
+        loadSettings();
+
+        // أحداث الإعدادات
+        toggleSettingsBtn.addEventListener('click', () => {
+            settingsPanel.classList.toggle('hidden');
+            toggleSettingsBtn.innerHTML = settingsPanel.classList.contains('hidden') ? 
+                '<i class="fas fa-cog"></i> إظهار الإعدادات المتقدمة' : 
+                '<i class="fas fa-cog"></i> إخفاء الإعدادات المتقدمة';
+        });
+
+        bgColorSelect.addEventListener('change', () => {
+            customColorGroup.classList.toggle('hidden', bgColorSelect.value !== 'custom');
+        });
+
+        saveApiKeyBtn.addEventListener('click', saveSettings);
+
+        // أحداث تحميل الصور
+        uploadBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', handleFile);
+        
+        // أحداث سحب وإسقاط الصور
+        ['dragover', 'dragenter'].forEach(event => {
+            dropArea.addEventListener(event, e => {
+                e.preventDefault();
+                dropArea.classList.add('hover');
+            });
+        });
+        
+        ['dragleave', 'dragend'].forEach(event => {
+            dropArea.addEventListener(event, () => {
+                dropArea.classList.remove('hover');
+            });
+        });
+        
+        dropArea.addEventListener('drop', e => {
+            e.preventDefault();
+            dropArea.classList.remove('hover');
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleFile({ target: fileInput });
+            }
+        });
+
+        // أحداث الأزرار
+        cancelBtn.addEventListener('click', resetApp);
+        tryAnotherBtn.addEventListener('click', resetApp);
+
+        // وظائف مساعدة
+        function handleFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // التحقق من نوع الملف
+            if (!file.type.match('image.*')) {
+                showError("الرجاء تحميل ملف صورة فقط (JPEG, PNG, etc.)");
+                return;
+            }
+
+            // التحقق من حجم الملف (5MB كحد أقصى)
+            if (file.size > 5 * 1024 * 1024) {
+                showError("حجم الصورة كبير جداً. الحد الأقصى هو 5MB");
+                return;
+            }
+
+            processImage(file);
+        }
+
+        async function processImage(file) {
+            try {
+                // إعداد الواجهة
+                resetMessages();
+                showLoading(true);
+                
+                // محاكاة تقدم المعالجة
+                simulateProgress();
+                
+                // عرض الصورة الأصلية
+                originalImage.src = URL.createObjectURL(file);
+                originalImage.onload = () => {
+                    originalImage.classList.remove('hidden');
+                };
+
+                // استخدام API إذا كان هناك مفتاح، وإلا استخدام المحاكاة
+                const apiKey = document.getElementById('apiKeyInput').value.trim();
+                if (apiKey) {
+                    await removeBackgroundWithAPI(file, apiKey);
+                } else {
+                    await removeBackground(file);
+                }
+                
+                // عرض النتيجة
+                previewSection.style.display = 'flex';
+                downloadBtn.classList.remove('hidden');
+                tryAnotherBtn.classList.remove('hidden');
+                cancelBtn.classList.remove('hidden');
+                
+                showSuccess("تمت معالجة الصورة بنجاح!");
+            } catch (error) {
+                showError(error.message);
+                dropArea.classList.add('shake');
+                setTimeout(() => dropArea.classList.remove('shake'), 500);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function removeBackgroundWithAPI(file, apiKey) {
+            const formData = new FormData();
+            formData.append("image_file", file);
+            formData.append("size", "auto");
+            
+            const response = await fetch("https://api.remove.bg/v1.0/removebg", {
+                method: "POST",
+                headers: {
+                    "X-Api-Key": apiKey
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error("فشل في إزالة الخلفية. تأكد من صحة مفتاح API.");
+            }
+
+            const blob = await response.blob();
+            resultImage.src = URL.createObjectURL(blob);
+            resultImage.classList.remove('hidden');
+            
+            // إعداد زر التحميل
+            downloadBtn.onclick = () => {
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = "no-bg-" + Date.now() + ".png";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            };
+        }
+
+        function removeBackground(file) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        
+                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const data = imageData.data;
+                        
+                        // تحديد لون الخلفية
+                        const bgColor = getBackgroundColor(imageData);
+                        const sensitivity = parseInt(sensitivityRange.value);
+                        
+                        // إزالة الخلفية
+                        for (let i = 0; i < data.length; i += 4) {
+                            if (isBackgroundPixel(data, i, bgColor, sensitivity)) {
+                                data[i + 3] = 0; // جعل البكسل شفاف
+                            }
+                        }
+                        
+                        // تطبيق لون الخلفية الجديدة إذا لم يكن شفافاً
+                        if (bgColorSelect.value !== 'transparent') {
+                            applyNewBackground(imageData, bgColorSelect.value, customColorInput.value);
+                        }
+                        
+                        ctx.putImageData(imageData, 0, 0);
+                        resultImage.src = canvas.toDataURL();
+                        resultImage.classList.remove('hidden');
+                        
+                        // إعداد زر التحميل
+                        downloadBtn.onclick = () => {
+                            const a = document.createElement('a');
+                            a.href = canvas.toDataURL();
+                            a.download = "no-bg-" + Date.now() + ".png";
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                        };
+                        
+                        resolve();
+                    };
+                    img.src = URL.createObjectURL(file);
+                }, 1500);
+            });
+        }
+
+        function getBackgroundColor(imageData) {
+            // تحليل لون الخلفية من زوايا الصورة
+            const data = imageData.data;
+            const corners = [
+                0, // الزاوية العلوية اليسرى
+                (imageData.width - 1) * 4, // الزاوية العلوية اليمنى
+                (imageData.width * (imageData.height - 1)) * 4, // الزاوية السفلية اليسرى
+                (imageData.width * imageData.height - 1) * 4 // الزاوية السفلية اليمنى
+            ];
+            
+            let r = 0, g = 0, b = 0;
+            corners.forEach(pos => {
+                r += data[pos];
+                g += data[pos + 1];
+                b += data[pos + 2];
+            });
+            
+            return {
+                r: Math.round(r / corners.length),
+                g: Math.round(g / corners.length),
+                b: Math.round(b / corners.length)
+            };
+        }
+
+        function isBackgroundPixel(data, i, bgColor, sensitivity) {
+            // حساب الفرق بين لون البكسل ولون الخلفية
+            const diff = Math.abs(data[i] - bgColor.r) +
+                        Math.abs(data[i + 1] - bgColor.g) +
+                        Math.abs(data[i + 2] - bgColor.b);
+            
+            // إذا كان الفرق أقل من الحساسية، يعتبر البكسل جزءًا من الخلفية
+            return diff < sensitivity;
+        }
+
+        function applyNewBackground(imageData, bgType, customColor) {
+            const data = imageData.data;
+            let r, g, b;
+            
+            switch(bgType) {
+                case 'white':
+                    r = g = b = 255;
+                    break;
+                case 'black':
+                    r = g = b = 0;
+                    break;
+                case 'green':
+                    r = 0; g = 128; b = 0;
+                    break;
+                case 'blue':
+                    r = 0; g = 0; b = 255;
+                    break;
+                case 'custom':
+                    // تحويل اللون المخصص من HEX إلى RGB
+                    const hex = customColor.replace('#', '');
+                    r = parseInt(hex.substring(0, 2), 16);
+                    g = parseInt(hex.substring(2, 4), 16);
+                    b = parseInt(hex.substring(4, 6), 16);
+                    break;
+                default:
+                    return; // لا تفعل شيئاً للخلفية الشفافة
+            }
+            
+            for (let i = 0; i < data.length; i += 4) {
+                if (data[i + 3] === 0) { // إذا كان البكسل شفافاً
+                    data[i] = r;
+                    data[i + 1] = g;
+                    data[i + 2] = b;
+                    data[i + 3] = 255; // جعله معتماً
+                }
+            }
+        }
+
+        function simulateProgress() {
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                } else {
+                    width += 2;
+                    progressBar.style.width = width + '%';
+                    progressPercent.textContent = width + '%';
+                }
+            }, 50);
+        }
+
+        function showLoading(show) {
+            loadingIndicator.style.display = show ? 'block' : 'none';
+            if (!show) {
+                progressBar.style.width = '0%';
+                progressPercent.textContent = '0%';
+            }
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+            successMessage.classList.add('hidden');
+        }
+
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.classList.remove('hidden');
+            errorMessage.classList.add('hidden');
+        }
+
+        function resetMessages() {
+            errorMessage.textContent = '';
+            errorMessage.classList.add('hidden');
+            successMessage.textContent = '';
+            successMessage.classList.add('hidden');
+        }
+
+        function resetApp() {
+            fileInput.value = '';
+            originalImage.src = '#';
+            resultImage.src = '#';
+            originalImage.classList.add('hidden');
+            resultImage.classList.add('hidden');
+            previewSection.style.display = 'none';
+            resetMessages();
+        }
+
+        function saveSettings() {
+            const settings = {
+                apiKey: document.getElementById('apiKeyInput').value.trim(),
+                bgColor: bgColorSelect.value,
+                customColor: customColorInput.value,
+                highQuality: highQualityCheckbox.checked,
+                shadow: shadowCheckbox.checked,
+                sensitivity: sensitivityRange.value
+            };
+            localStorage.setItem('bgRemoverSettings', JSON.stringify(settings));
+            showSuccess("تم حفظ الإعدادات بنجاح!");
+        }
+
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('bgRemoverSettings');
+            if (savedSettings) {
+                const settings = JSON.parse(savedSettings);
+                document.getElementById('apiKeyInput').value = settings.apiKey || '';
+                bgColorSelect.value = settings.bgColor || 'transparent';
+                customColorInput.value = settings.customColor || '#ffffff';
+                highQualityCheckbox.checked = settings.highQuality !== false;
+                shadowCheckbox.checked = settings.shadow || false;
+                sensitivityRange.value = settings.sensitivity || 30;
+                
+                if (bgColorSelect.value === 'custom') {
+                    customColorGroup.classList.remove('hidden');
+                }
+            }
+        }
+    });
+    </script>
+</body>
+</html>
